@@ -33,11 +33,10 @@ h3 {
   color: #555;
   font-size: 26px;
   font-weight: 400;
-  margin-bottom: 5px;
 }
 
 p {
-  margin-bottom: 10px;
+//   margin-bottom: 10px;
 }
 
 h4 { font-weight: 500; }
@@ -104,27 +103,23 @@ h4 { font-weight: 500; }
 #article-container {
 
   .article {
-    margin-bottom: 70px;
-  }
+    padding-bottom: 70px;
+    padding-top: 50px;
 
-  .article-preview {
-    box-sizing: border-box;
-    // box-shadow: #ececec 0px 1px 6px, #ececec 0px 1px 4px;
-    // padding: 0px 15px 20px 15px;
-    margin-top: 20px;
-    margin-bottom: 50px;
+    &:not(:last-of-type) {
+        border-bottom: 1px solid $orange;
+    }
 
-    .read {
-      color: red;
+    &:first-of-type {
+        padding-top: 0;
     }
   }
 
   section.article-ingress {
-    margin-top: 30px;
     font-style: italic;
   }
 
-  section.article-body { margin-top: 30px; }
+  section.article-body { margin-top: 20px; }
 
   header {
     margin-bottom: 10px;
@@ -133,13 +128,23 @@ h4 { font-weight: 500; }
   }
 }
 
-pre > code.hljs {
-  margin: 10px 0;
+.article-body {
+    pre {
+        background-color: #eee;
+        padding: 5px 15px;
+        line-height: 1.3;
+        // margin-left: -1.5em;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
 }
 
-code.hljs {
-  box-sizing: border-box;
-  padding: 5px 15px;
+pre > code {
+    margin: 10px 0;
+    width: 100%;
+}
+
+code[class^="lang-"] {
   font-family: monospace;
 }
 

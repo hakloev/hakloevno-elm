@@ -204,7 +204,7 @@ renderArticles model =
 
 renderArticle : Article -> Html Msg
 renderArticle rawArticle =
-    article []
+    article [ class "article" ]
         [ section [ class "article-title" ] [ h1 [] [ text rawArticle.title ] ]
         , section [ class "article-ingress" ] [ p [] [ text rawArticle.ingress ] ]
         , section [ class "article-body" ] [ Markdown.toHtml [] rawArticle.body ]
