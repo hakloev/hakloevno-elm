@@ -1,10 +1,8 @@
 module Main exposing (..)
 
 import Markdown
-import Date exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
 import Http
 import Json.Decode as Decode
 
@@ -41,15 +39,18 @@ init =
 
 
 type alias Model =
-    -- { departures : List Departure
-    -- , stops : List StopID
-    -- , selectedStop : StopID
-    -- , articles : List Article
-    -- , loadError : String
-    -- }
     { articles : List Article
     , loadError : String
     }
+
+
+
+-- { departures : List Departure
+-- , stops : List StopID
+-- , selectedStop : StopID
+-- , articles : List Article
+-- , loadError : String
+-- }
 
 
 type alias Article =
@@ -86,18 +87,18 @@ type alias Article =
 
 initialModel : Model
 initialModel =
-    -- { departures = []
-    -- , stops = [ 3012120, 3012122, 3012121, 3010465, 3012123 ]
-    -- , selectedStop = 3012120
-    -- , articles = []
-    -- , loadError = ""
-    -- }
     { articles = []
     , loadError = ""
     }
 
 
 
+-- { departures = []
+-- , stops = [ 3012120, 3012122, 3012121, 3010465, 3012123 ]
+-- , selectedStop = 3012120
+-- , articles = []
+-- , loadError = ""
+-- }
 -- SUBSCRIPTIONS
 
 
@@ -174,34 +175,6 @@ decodeArticle =
 
 
 
--- getStopDepartures : StopID -> Cmd Msg
--- getStopDepartures stopId =
---     let
---         request =
---             Http.get ("http://reisapi.ruter.no/StopVisit/GetDepartures/" ++ toString stopId) decodeDepartureList
---     in
---         Http.send LoadDepartures request
--- decodeDepartureList : Decode.Decoder (List Departure)
--- decodeDepartureList =
---     Decode.list decodeDeparture
--- decodeDeparture : Decode.Decoder Departure
--- decodeDeparture =
---     Decode.map2 Departure
---         (Decode.field "RecordedAtTime" Decode.string)
---         (Decode.field "MonitoredVehicleJourney" decodeDepartureDetail)
--- decodeDepartureDetail : Decode.Decoder DepartureDetail
--- decodeDepartureDetail =
---     Decode.map3 DepartureDetail
---         (Decode.field "DestinationName" Decode.string)
---         (Decode.field "PublishedLineName" Decode.string)
---         (Decode.field "MonitoredCall" decodeDepartureTime)
--- decodeDepartureTime : Decode.Decoder DepartureTime
--- decodeDepartureTime =
---     Decode.map4 DepartureTime
---         (Decode.field "AimedArrivalTime" Decode.string)
---         (Decode.field "ExpectedArrivalTime" Decode.string)
---         (Decode.field "AimedDepartureTime" Decode.string)
---         (Decode.field "ExpectedDepartureTime" Decode.string)
 -- VIEW
 
 
@@ -256,6 +229,34 @@ renderHeader =
 
 
 
+-- getStopDepartures : StopID -> Cmd Msg
+-- getStopDepartures stopId =
+--     let
+--         request =
+--             Http.get ("http://reisapi.ruter.no/StopVisit/GetDepartures/" ++ toString stopId) decodeDepartureList
+--     in
+--         Http.send LoadDepartures request
+-- decodeDepartureList : Decode.Decoder (List Departure)
+-- decodeDepartureList =
+--     Decode.list decodeDeparture
+-- decodeDeparture : Decode.Decoder Departure
+-- decodeDeparture =
+--     Decode.map2 Departure
+--         (Decode.field "RecordedAtTime" Decode.string)
+--         (Decode.field "MonitoredVehicleJourney" decodeDepartureDetail)
+-- decodeDepartureDetail : Decode.Decoder DepartureDetail
+-- decodeDepartureDetail =
+--     Decode.map3 DepartureDetail
+--         (Decode.field "DestinationName" Decode.string)
+--         (Decode.field "PublishedLineName" Decode.string)
+--         (Decode.field "MonitoredCall" decodeDepartureTime)
+-- decodeDepartureTime : Decode.Decoder DepartureTime
+-- decodeDepartureTime =
+--     Decode.map4 DepartureTime
+--         (Decode.field "AimedArrivalTime" Decode.string)
+--         (Decode.field "ExpectedArrivalTime" Decode.string)
+--         (Decode.field "AimedDepartureTime" Decode.string)
+--         (Decode.field "ExpectedDepartureTime" Decode.string)
 -- departureDetail : Departure -> Html Msg
 -- departureDetail departure =
 --     div []
