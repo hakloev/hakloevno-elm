@@ -1,0 +1,24 @@
+pipeline:
+    build:
+        image: node:7.10.0-slim
+        pull: true
+        commands:
+            - npm prune
+            - npm install -g --silent elm yarn
+            - yarn install
+            - npm run build
+    deploy:
+        image: drillster/drone-rsync
+        user: hakloev
+        hosts: [ "hakloev.no" ]
+        key: ${SSH_KEY}
+        port: 723
+        source: dist/
+        target: /srv/hakloevno/
+        delete: false
+        recursive: true
+        exclude:
+        when:
+            branch: master
+        script:
+            - echo "Done"
