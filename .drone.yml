@@ -4,7 +4,8 @@ pipeline:
         pull: true
         commands:
             - npm prune
-            - npm install -g --silent elm yarn
+            - npm install -g --silent elm
+            - npm install --silent yarn
             - yarn install
             - npm run build
     deploy:
