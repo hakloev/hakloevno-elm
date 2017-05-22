@@ -189,8 +189,8 @@ view model =
 renderArticles : Model -> Html Msg
 renderArticles model =
     section [ id "article-container" ]
-        [ case List.length model.articles of
-            0 ->
+        [ case model.articles of
+            [] ->
                 div [] [ h2 [] [ text "Loading..." ] ]
 
             _ ->
