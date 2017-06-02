@@ -31,7 +31,7 @@ init =
             initialModel
     in
         -- model ! [ getStopDepartures model.selectedStop, getAllArticles ]
-        model ! [ getAllArticles ]
+        model ! [ getAllArticles, getForecast ]
 
 
 
@@ -40,6 +40,7 @@ init =
 
 type alias Model =
     { articles : List Article
+    , forecasts : List Forecast
     , loadError : String
     }
 
@@ -62,6 +63,35 @@ type alias Article =
     , publish : Bool
     , created : String
     , modified : String
+    }
+
+
+type alias ForecastResponse =
+    { originUrl : String
+    , forecasts : List Forecast
+    }
+
+
+type alias Forecast =
+    { from : String
+    , icon : String
+    , temperature : String
+    , pressure : String
+    , precipitation : String
+    , windSpeed : WindSpeed
+    , windDirection : WindDirection
+    }
+
+
+type alias WindDirection =
+    { direction : String
+    , degrees : String
+    }
+
+
+type alias WindSpeed =
+    { beaufort : String
+    , mps : String
     }
 
 
@@ -88,6 +118,7 @@ type alias Article =
 initialModel : Model
 initialModel =
     { articles = []
+    , forecasts = []
     , loadError = ""
     }
 
@@ -114,6 +145,7 @@ subscriptions model =
 type Msg
     = NoOp
     | GetAllArticles (Result Http.Error (List Article))
+    | GetWeatherData (Result Http.Error (List Forecast))
 
 
 
@@ -133,6 +165,12 @@ update msg model =
         GetAllArticles (Result.Err err) ->
             ( { model | loadError = toString err, articles = [] }, Cmd.none )
 
+        GetWeatherData (Result.Ok forecasts) ->
+            ( { model | forecasts = forecasts }, Cmd.none )
+
+        GetWeatherData (Result.Err err) ->
+            ( { model | loadError = toString err, forecasts = [] }, Cmd.none )
+
 
 
 -- LoadDepartures (Result.Ok deps) ->
@@ -145,6 +183,70 @@ update msg model =
 --             Result.withDefault 3012120 (String.toInt stopId)
 --     in
 --         ( { model | selectedStop = stopIdIntValue, departures = [] }, getStopDepartures stopIdIntValue )
+
+
+getForecast : Cmd Msg
+getForecast =
+    let
+        request =
+            Http.get "/api/weather/location?lat=59.94&lon=10.77" decodeForecasts
+    in
+        Http.send GetWeatherData request
+
+
+decodeForecasts : Decode.Decoder (List Forecast)
+decodeForecasts =
+    let
+        forecastDecoder =
+            Decode.list decodeForecast
+    in
+        Decode.at [ "forecasts" ] forecastDecoder
+
+
+decodeForecast : Decode.Decoder Forecast
+decodeForecast =
+    Decode.map7 Forecast
+        (Decode.field "from" Decode.string)
+        (Decode.field "icon" decodeIcon)
+        (Decode.field "temperature" decodeTemperature)
+        (Decode.field "pressure" decodePressure)
+        (Decode.field "precipitation" decodePrecipitation)
+        (Decode.field "windSpeed" decodeWindSpeed)
+        (Decode.field "windDirection" decodeWindDirection)
+
+
+decodeIcon : Decode.Decoder String
+decodeIcon =
+    Decode.field "number" Decode.string
+
+
+decodeTemperature : Decode.Decoder String
+decodeTemperature =
+    Decode.field "value" Decode.string
+
+
+decodePressure : Decode.Decoder String
+decodePressure =
+    Decode.field "value" Decode.string
+
+
+decodePrecipitation : Decode.Decoder String
+decodePrecipitation =
+    Decode.field "value" Decode.string
+
+
+decodeWindSpeed : Decode.Decoder WindSpeed
+decodeWindSpeed =
+    Decode.map2 WindSpeed
+        (Decode.field "name" Decode.string)
+        (Decode.field "mps" Decode.string)
+
+
+decodeWindDirection : Decode.Decoder WindDirection
+decodeWindDirection =
+    Decode.map2 WindDirection
+        (Decode.field "name" Decode.string)
+        (Decode.field "deg" Decode.string)
 
 
 getAllArticles : Cmd Msg
@@ -182,8 +284,31 @@ view : Model -> Html Msg
 view model =
     div []
         [ renderHeader
+        , div [ id "forecast-container" ] [ renderForecastWidget model ]
         , div [ id "main-content", class "container" ] [ renderArticles model ]
         ]
+
+
+renderForecastWidget : Model -> Html Msg
+renderForecastWidget model =
+    div []
+        [ case model.forecasts of
+            [] ->
+                div [] [ h2 [] [ text "Loading weather..." ] ]
+
+            forecasts ->
+                renderForecast (List.sortBy (\f -> f.from) forecasts)
+        ]
+
+
+renderForecast : List Forecast -> Html Msg
+renderForecast forecasts =
+    case forecasts of
+        h :: t ->
+            div [] [ text h.from ]
+
+        _ ->
+            div [] [ text "No forecast" ]
 
 
 renderArticles : Model -> Html Msg
