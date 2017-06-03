@@ -69,6 +69,7 @@ type alias Article =
 
 type alias DetailedForecast =
     { from : String
+    , to : String
     , icon : String
     , temperature : String
     , pressure : String
@@ -171,7 +172,13 @@ update msg model =
             ( { model | loadError = toString err, articles = [] }, Cmd.none )
 
         GetDetailedForecasts (Result.Ok forecasts) ->
-            ( { model | detailedForecasts = forecasts }, Cmd.none )
+            -- Should probably also add a check for empty list here?
+            let
+                newForecasts =
+                    -- Take the first forecast after sorting by to-timestamp
+                    List.sortBy (\f -> f.to) forecasts |> List.take 1
+            in
+                ( { model | detailedForecasts = newForecasts }, Cmd.none )
 
         GetDetailedForecasts (Result.Err err) ->
             ( { model | loadError = toString err, detailedForecasts = [] }, Cmd.none )
@@ -248,8 +255,9 @@ decodeDetailedForecasts =
 
 decodeDetailedForecast : Decode.Decoder DetailedForecast
 decodeDetailedForecast =
-    Decode.map7 DetailedForecast
+    Decode.map8 DetailedForecast
         (Decode.field "from" Decode.string)
+        (Decode.field "to" Decode.string)
         (Decode.field "icon" decodeIcon)
         (Decode.field "temperature" decodeTemperature)
         (Decode.field "pressure" decodePressure)
@@ -327,6 +335,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ renderHeader
+        , div [ id "spacer" ] []
         , div [ id "forecast-container" ] [ renderForecastWidget model ]
         , div [ id "main-content", class "container" ] [ renderArticles model ]
         ]
@@ -334,24 +343,73 @@ view model =
 
 renderForecastWidget : Model -> Html Msg
 renderForecastWidget model =
-    div []
+    div [ class "container" ]
         [ case model.detailedForecasts of
             [] ->
-                div [] [ h2 [] [ text "Loading weather..." ] ]
+                div [ id "forecast-loading" ] [ h2 [] [ text "Loading weather..." ] ]
 
             forecasts ->
-                renderForecast (List.sortBy (\f -> f.from) forecasts)
+                renderForecast model
         ]
 
 
-renderForecast : List DetailedForecast -> Html Msg
-renderForecast forecasts =
-    case forecasts of
-        h :: t ->
-            div [] [ text h.from ]
+renderForecast : Model -> Html Msg
+renderForecast model =
+    let
+        detailedForecast =
+            let
+                data =
+                    -- List.sortBy (\f -> f.from) model.textualForecasts |> List.head
+                    List.head model.detailedForecasts
+            in
+                div [] [ renderDetailedForecast data ]
 
-        _ ->
-            div [] [ text "No forecast" ]
+        textualForecast =
+            let
+                data =
+                    List.sortBy (\f -> f.from) model.textualForecasts |> List.head
+            in
+                div [ id "forecast-textual" ] [ renderTextualForecast data ]
+    in
+        div []
+            [ detailedForecast
+            , textualForecast
+            ]
+
+
+renderDetailedForecast : Maybe DetailedForecast -> Html Msg
+renderDetailedForecast data =
+    case data of
+        Just h ->
+            div []
+                [ div [ id "forecast-city" ] [ h3 [] [ text "Trondheim" ] ]
+                , div []
+                    [ div [ id "forecast-main-data" ]
+                        [ div [ id "forecast-icon" ] [ img [ src ("static/weather/" ++ h.icon ++ ".svg") ] [] ]
+                        , div [ id "forecast-degrees" ] [ span [] [ text (h.temperature ++ "°C") ] ]
+                        ]
+                    , div [ id "forecast-details" ]
+                        [ ul []
+                            [ li [] [ span [] [ text (h.windSpeed.mps ++ " m/s " ++ h.windDirection.direction) ] ]
+                            , li [] [ span [] [ text (h.precipitation ++ "mm") ] ]
+                            , li [] [ span [] [ text (h.pressure ++ " hPa") ] ]
+                            ]
+                        ]
+                    ]
+                ]
+
+        Nothing ->
+            div [] [ text "No forecast found..." ]
+
+
+renderTextualForecast : Maybe TextualForecast -> Html Msg
+renderTextualForecast data =
+    case data of
+        Just d ->
+            p [] [ text d.forecast ]
+
+        Nothing ->
+            p [] [ text "No textual forecast found..." ]
 
 
 renderArticles : Model -> Html Msg

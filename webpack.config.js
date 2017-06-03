@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 console.log('Environment:', process.env.NODE_ENV);
 
@@ -8,6 +9,9 @@ let commonPlugins = [
     new HtmlWebpackPlugin({
       template: './static/index.html',
     }),
+    new CopyWebpackPlugin([
+        { from: 'static/weather', to: 'static/weather' }
+    ])
 ]
 
 commonPlugins = process.env.NODE_ENV === 'development' ? commonPlugins : commonPlugins.concat([
@@ -23,7 +27,7 @@ let commonConfig = {
 
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js'
+    filename: '[name].js',
   },
 
   resolve: {
@@ -41,9 +45,9 @@ let commonConfig = {
       //   loader: 'file-loader?name=[name].[ext]'
       // },
       {
-        test: /\.elm$/,
-        exclude: [/elm-stuff/, /node_modules/],
-        loader: process.env.NODE_ENV === 'development' ? 'elm-hot-loader!elm-webpack-loader?verbose=true&warn=true&debug=true' : 'elm-webpack-loader',
+         test: /\.elm$/,
+         exclude: [/elm-stuff/, /node_modules/],
+         loader: process.env.NODE_ENV === 'development' ? 'elm-hot-loader!elm-webpack-loader?verbose=true&warn=true&debug=true' : 'elm-webpack-loader',
       },
       {
          test: /\.(css|scss)$/,
@@ -51,6 +55,10 @@ let commonConfig = {
            'style-loader', 'css-loader', 'sass-loader',
          ]
       },
+      {
+         test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+         loader: 'file-loader'
+      }
     ],
   },
 

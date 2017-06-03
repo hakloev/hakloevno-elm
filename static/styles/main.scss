@@ -148,6 +148,72 @@ code[class^="lang-"] {
   font-family: monospace;
 }
 
+#spacer {
+    height: 50px;
+}
+
+#forecast-container {
+    background-color: $dark-grey;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+#forecast-loading > h2 {
+    color: white;
+}
+
+#forecast-city {
+    display: inline-block;
+    margin-bottom: 10px;
+    h3 {
+        color: white;
+        width: 110%;
+        border-bottom: 1px solid white;
+    }
+}
+
+#forecast-main-data {
+    height: 100%;
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#forecast-icon {
+    width: 128px;
+    height: 128px;
+    margin-right: 10px;
+}
+
+#forecast-degrees {
+    span {
+        font-size: 60px;
+        font-weight: 600;
+        color: $orange;
+    }
+}
+
+#forecast-details {
+    margin-bottom: 10px;
+    ul {
+        li {
+            display: inline-block;
+            color: white;
+            margin-right: 10px;
+            font-weight: 400;
+        }
+    }
+}
+
+#forecast-textual {
+    color: white;
+    font-style: italic;
+    font-size: 15px;
+}
+
+
 @media only screen and (max-width: 786px) {
   .container {
     width: 80%;
