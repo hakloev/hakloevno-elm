@@ -31,7 +31,7 @@ init =
             initialModel
     in
         -- model ! [ getStopDepartures model.selectedStop, getAllArticles ]
-        model ! [ getAllArticles, getForecast ]
+        model ! [ getAllArticles, getDetailedForecasts, getTextualForecasts ]
 
 
 
@@ -40,7 +40,8 @@ init =
 
 type alias Model =
     { articles : List Article
-    , forecasts : List Forecast
+    , detailedForecasts : List DetailedForecast
+    , textualForecasts : List TextualForecast
     , loadError : String
     }
 
@@ -66,13 +67,7 @@ type alias Article =
     }
 
 
-type alias ForecastResponse =
-    { originUrl : String
-    , forecasts : List Forecast
-    }
-
-
-type alias Forecast =
+type alias DetailedForecast =
     { from : String
     , icon : String
     , temperature : String
@@ -92,6 +87,14 @@ type alias WindDirection =
 type alias WindSpeed =
     { beaufort : String
     , mps : String
+    }
+
+
+type alias TextualForecast =
+    { from : String
+    , to : String
+    , kind : String
+    , forecast : String
     }
 
 
@@ -118,7 +121,8 @@ type alias WindSpeed =
 initialModel : Model
 initialModel =
     { articles = []
-    , forecasts = []
+    , detailedForecasts = []
+    , textualForecasts = []
     , loadError = ""
     }
 
@@ -144,8 +148,9 @@ subscriptions model =
 
 type Msg
     = NoOp
-    | GetAllArticles (Result Http.Error (List Article))
-    | GetWeatherData (Result Http.Error (List Forecast))
+    | GetArticles (Result Http.Error (List Article))
+    | GetDetailedForecasts (Result Http.Error (List DetailedForecast))
+    | GetTextualForecasts (Result Http.Error (List TextualForecast))
 
 
 
@@ -159,17 +164,23 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-        GetAllArticles (Result.Ok articles) ->
+        GetArticles (Result.Ok articles) ->
             ( { model | articles = articles }, Cmd.none )
 
-        GetAllArticles (Result.Err err) ->
+        GetArticles (Result.Err err) ->
             ( { model | loadError = toString err, articles = [] }, Cmd.none )
 
-        GetWeatherData (Result.Ok forecasts) ->
-            ( { model | forecasts = forecasts }, Cmd.none )
+        GetDetailedForecasts (Result.Ok forecasts) ->
+            ( { model | detailedForecasts = forecasts }, Cmd.none )
 
-        GetWeatherData (Result.Err err) ->
-            ( { model | loadError = toString err, forecasts = [] }, Cmd.none )
+        GetDetailedForecasts (Result.Err err) ->
+            ( { model | loadError = toString err, detailedForecasts = [] }, Cmd.none )
+
+        GetTextualForecasts (Result.Ok forecasts) ->
+            ( { model | textualForecasts = forecasts }, Cmd.none )
+
+        GetTextualForecasts (Result.Err err) ->
+            ( { model | loadError = toString err, textualForecasts = [] }, Cmd.none )
 
 
 
@@ -185,27 +196,59 @@ update msg model =
 --         ( { model | selectedStop = stopIdIntValue, departures = [] }, getStopDepartures stopIdIntValue )
 
 
-getForecast : Cmd Msg
-getForecast =
+forecastLocation : String
+forecastLocation =
+    "?lat=59.94&lon=10.77"
+
+
+getTextualForecasts : Cmd Msg
+getTextualForecasts =
     let
         request =
-            Http.get "/api/weather/location?lat=59.94&lon=10.77" decodeForecasts
+            Http.get ("/api/weather/location/text/" ++ forecastLocation) decodeTextualForecasts
     in
-        Http.send GetWeatherData request
+        Http.send GetTextualForecasts request
 
 
-decodeForecasts : Decode.Decoder (List Forecast)
-decodeForecasts =
+decodeTextualForecasts : Decode.Decoder (List TextualForecast)
+decodeTextualForecasts =
     let
         forecastDecoder =
-            Decode.list decodeForecast
+            Decode.list decodeTextualForecast
     in
         Decode.at [ "forecasts" ] forecastDecoder
 
 
-decodeForecast : Decode.Decoder Forecast
-decodeForecast =
-    Decode.map7 Forecast
+decodeTextualForecast : Decode.Decoder TextualForecast
+decodeTextualForecast =
+    Decode.map4 TextualForecast
+        (Decode.field "from" Decode.string)
+        (Decode.field "to" Decode.string)
+        (Decode.field "type" Decode.string)
+        (Decode.field "forecast" Decode.string)
+
+
+getDetailedForecasts : Cmd Msg
+getDetailedForecasts =
+    let
+        request =
+            Http.get ("/api/weather/location/" ++ forecastLocation) decodeDetailedForecasts
+    in
+        Http.send GetDetailedForecasts request
+
+
+decodeDetailedForecasts : Decode.Decoder (List DetailedForecast)
+decodeDetailedForecasts =
+    let
+        forecastDecoder =
+            Decode.list decodeDetailedForecast
+    in
+        Decode.at [ "forecasts" ] forecastDecoder
+
+
+decodeDetailedForecast : Decode.Decoder DetailedForecast
+decodeDetailedForecast =
+    Decode.map7 DetailedForecast
         (Decode.field "from" Decode.string)
         (Decode.field "icon" decodeIcon)
         (Decode.field "temperature" decodeTemperature)
@@ -255,7 +298,7 @@ getAllArticles =
         request =
             Http.get "/api/articles/" decodeArticleList
     in
-        Http.send GetAllArticles request
+        Http.send GetArticles request
 
 
 decodeArticleList : Decode.Decoder (List Article)
@@ -292,7 +335,7 @@ view model =
 renderForecastWidget : Model -> Html Msg
 renderForecastWidget model =
     div []
-        [ case model.forecasts of
+        [ case model.detailedForecasts of
             [] ->
                 div [] [ h2 [] [ text "Loading weather..." ] ]
 
@@ -301,7 +344,7 @@ renderForecastWidget model =
         ]
 
 
-renderForecast : List Forecast -> Html Msg
+renderForecast : List DetailedForecast -> Html Msg
 renderForecast forecasts =
     case forecasts of
         h :: t ->
