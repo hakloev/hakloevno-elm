@@ -274,9 +274,12 @@ code[class^="lang-"] {
 }
 
 
-@media only screen and (max-width: 786px) {
+@media only screen and (max-device-width: 880px) {
     .container {
-        width: 80%;
+        width: 100%;
+    }
+    #about-me-summary {
+        flex: auto;
     }
     #about-me-content {
         flex-direction: column;
@@ -287,11 +290,27 @@ code[class^="lang-"] {
     }
 }
 
-@media (max-width: 880px) {
+@media (max-width: 949px) { // One pixel less than container
     .container {
         width: 85%;
     }
-        #main-header > .container {
+    #main-header > .container {
         width: 100%;
+    }
+    #about-me-summary {
+        flex: auto;
+    }
+    #about-me-content {
+        flex-direction: column;
+    }
+    #about-me-cv-picture {
+        margin: 0 auto;
+        margin-top: 40px;
+    }
+    #forecast-main-data {
+        flex-direction: column;
+    }
+    #forecast-details {
+        ul { li { display: block; } }
     }
 }
