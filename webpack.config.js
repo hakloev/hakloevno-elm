@@ -10,8 +10,8 @@ let commonPlugins = [
       template: './static/index.html',
     }),
     new CopyWebpackPlugin([
-        { from: 'static/weather', to: 'static/weather' },
-        { from: 'static/img', to: 'static/img' },
+        { from: 'static/weather', to: 'weather' },
+        { from: 'static/img', to: 'img' },
     ]),
 ]
 

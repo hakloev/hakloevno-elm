@@ -385,7 +385,7 @@ renderDetailedForecast data =
         Just h ->
             div [ id "forecast-detailed" ]
                 [ div [ id "forecast-main-data" ]
-                    [ div [ id "forecast-icon" ] [ img [ src ("static/weather/" ++ h.icon ++ ".svg") ] [] ]
+                    [ div [ id "forecast-icon" ] [ img [ src ("/weather/" ++ h.icon ++ ".svg") ] [] ]
                     , div [ id "forecast-degrees" ] [ span [] [ text (h.temperature ++ "°C") ] ]
                     ]
                 , div [ id "forecast-details" ]
@@ -448,7 +448,7 @@ renderAboutMe =
                 [ div [ id "about-me-title" ] [ h3 [] [ text "Håkon Løvdal - M.Sc., in Informatics" ] ]
                 , div [ id "about-me-text" ] [ aboutMeText ]
                 ]
-            , div [ id "about-me-cv-picture" ] [ img [ src "static/img/me.png" ] [] ]
+            , div [ id "about-me-cv-picture" ] [ img [ src "/img/me.png" ] [] ]
             ]
         ]
 
