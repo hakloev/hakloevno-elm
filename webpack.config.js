@@ -10,8 +10,9 @@ let commonPlugins = [
       template: './static/index.html',
     }),
     new CopyWebpackPlugin([
-        { from: 'static/weather', to: 'static/weather' }
-    ])
+        { from: 'static/weather', to: 'static/weather' },
+        { from: 'static/img', to: 'static/img' },
+    ]),
 ]
 
 commonPlugins = process.env.NODE_ENV === 'development' ? commonPlugins : commonPlugins.concat([

@@ -30,7 +30,6 @@ init =
         model =
             initialModel
     in
-        -- model ! [ getStopDepartures model.selectedStop, getAllArticles ]
         model ! [ getAllArticles, getDetailedForecasts, getTextualForecasts ]
 
 
@@ -205,7 +204,7 @@ update msg model =
 
 forecastLocation : String
 forecastLocation =
-    "?lat=59.94&lon=10.77"
+    "?lat=63.411&lon=10.399"
 
 
 getTextualForecasts : Cmd Msg
@@ -335,21 +334,23 @@ view : Model -> Html Msg
 view model =
     div []
         [ renderHeader
-        , div [ id "spacer" ] []
-        , div [ id "forecast-container" ] [ renderForecastWidget model ]
+        , div [ id "about-me-widget", class "container" ] [ renderAboutMe ]
+        , div [ id "forecast-widget", class "container" ] [ renderForecastWidget model ]
         , div [ id "main-content", class "container" ] [ renderArticles model ]
         ]
 
 
 renderForecastWidget : Model -> Html Msg
 renderForecastWidget model =
-    div [ class "container" ]
-        [ case model.detailedForecasts of
-            [] ->
-                div [ id "forecast-loading" ] [ h2 [] [ text "Loading weather..." ] ]
+    div [ class "card" ]
+        [ div [ class "card-content" ]
+            [ case model.detailedForecasts of
+                [] ->
+                    div [ id "forecast-loading" ] [ h3 [] [ text "Knerten is loading your weather data!" ] ]
 
-            forecasts ->
-                renderForecast model
+                forecasts ->
+                    renderForecast model
+            ]
         ]
 
 
@@ -362,17 +363,18 @@ renderForecast model =
                     -- List.sortBy (\f -> f.from) model.textualForecasts |> List.head
                     List.head model.detailedForecasts
             in
-                div [] [ renderDetailedForecast data ]
+                renderDetailedForecast data
 
         textualForecast =
             let
                 data =
                     List.sortBy (\f -> f.from) model.textualForecasts |> List.head
             in
-                div [ id "forecast-textual" ] [ renderTextualForecast data ]
+                renderTextualForecast data
     in
-        div []
-            [ detailedForecast
+        div [ id "forecast-content" ]
+            [ div [ id "forecast-city" ] [ h3 [] [ text "Trondheim" ] ]
+            , detailedForecast
             , textualForecast
             ]
 
@@ -381,35 +383,34 @@ renderDetailedForecast : Maybe DetailedForecast -> Html Msg
 renderDetailedForecast data =
     case data of
         Just h ->
-            div []
-                [ div [ id "forecast-city" ] [ h3 [] [ text "Trondheim" ] ]
-                , div []
-                    [ div [ id "forecast-main-data" ]
-                        [ div [ id "forecast-icon" ] [ img [ src ("static/weather/" ++ h.icon ++ ".svg") ] [] ]
-                        , div [ id "forecast-degrees" ] [ span [] [ text (h.temperature ++ "°C") ] ]
-                        ]
-                    , div [ id "forecast-details" ]
-                        [ ul []
-                            [ li [] [ span [] [ text (h.windSpeed.mps ++ " m/s " ++ h.windDirection.direction) ] ]
-                            , li [] [ span [] [ text (h.precipitation ++ "mm") ] ]
-                            , li [] [ span [] [ text (h.pressure ++ " hPa") ] ]
-                            ]
+            div [ id "forecast-detailed" ]
+                [ div [ id "forecast-main-data" ]
+                    [ div [ id "forecast-icon" ] [ img [ src ("static/weather/" ++ h.icon ++ ".svg") ] [] ]
+                    , div [ id "forecast-degrees" ] [ span [] [ text (h.temperature ++ "°C") ] ]
+                    ]
+                , div [ id "forecast-details" ]
+                    [ ul []
+                        [ li [] [ span [] [ i [ class "fa fa-flag" ] [], text (h.windSpeed.mps ++ " m/s " ++ h.windDirection.direction) ] ]
+                        , li [] [ span [] [ i [ class "fa fa-tint" ] [], text (h.precipitation ++ "mm") ] ]
+                        , li [] [ span [] [ i [ class "fa fa-thermometer-full" ] [], text (h.pressure ++ " hPa") ] ]
                         ]
                     ]
                 ]
 
         Nothing ->
-            div [] [ text "No forecast found..." ]
+            div [] [ p [] [ text "Unfortunately, Knerten could not find any forecast details..." ] ]
 
 
 renderTextualForecast : Maybe TextualForecast -> Html Msg
 renderTextualForecast data =
-    case data of
-        Just d ->
-            p [] [ text d.forecast ]
+    div [ id "forecast-textual" ]
+        [ case data of
+            Just d ->
+                p [] [ text d.forecast ]
 
-        Nothing ->
-            p [] [ text "No textual forecast found..." ]
+            Nothing ->
+                p [] [ text "Unfortunately, Knerten could not find any textual forecast..." ]
+        ]
 
 
 renderArticles : Model -> Html Msg
@@ -417,7 +418,7 @@ renderArticles model =
     section [ id "article-container" ]
         [ case model.articles of
             [] ->
-                div [] [ h2 [] [ text "Loading..." ] ]
+                div [ id "article-loading", class "card" ] [ div [ class "card-content" ] [ h3 [] [ text "Knerten is collecting his latest articles!" ] ] ]
 
             _ ->
                 div []
@@ -430,10 +431,25 @@ renderArticles model =
 
 renderArticle : Article -> Html Msg
 renderArticle rawArticle =
-    article [ class "article" ]
-        [ section [ class "article-title" ] [ h1 [] [ text rawArticle.title ] ]
-        , section [ class "article-ingress" ] [ p [] [ text rawArticle.ingress ] ]
-        , section [ class "article-body" ] [ Markdown.toHtml [] rawArticle.body ]
+    article [ class "article card" ]
+        [ div [ class "card-content" ]
+            [ section [ class "article-title" ] [ h1 [] [ text rawArticle.title ] ]
+            , section [ class "article-ingress" ] [ p [] [ text rawArticle.ingress ] ]
+            , section [ class "article-body" ] [ Markdown.toHtml [] rawArticle.body ]
+            ]
+        ]
+
+
+renderAboutMe : Html Msg
+renderAboutMe =
+    div [ class "card" ]
+        [ div [ id "about-me-content", class "card-content" ]
+            [ div [ id "about-me-summary" ]
+                [ div [ id "about-me-title" ] [ h3 [] [ text "Håkon Løvdal - M.Sc., in Informatics" ] ]
+                , div [ id "about-me-text" ] [ aboutMeText ]
+                ]
+            , div [ id "about-me-cv-picture" ] [ img [ src "static/img/me.png" ] [] ]
+            ]
         ]
 
 
@@ -452,6 +468,11 @@ renderHeader =
                 ]
             ]
         ]
+
+
+aboutMeText : Html Msg
+aboutMeText =
+    p [] [ text "I'm a programmer with a passion for web development. This site is used to learn new web technologies, and therefore like a never ending story - with new versions deployed continuously. I've recently concluded my Master's degree at NTNU." ]
 
 
 

@@ -35,9 +35,7 @@ h3 {
   font-weight: 400;
 }
 
-p {
-//   margin-bottom: 10px;
-}
+p {}
 
 h4 { font-weight: 500; }
 
@@ -98,21 +96,77 @@ h4 { font-weight: 500; }
   }
 }
 
-#main-content { margin-top: 60px; }
+#main-content { margin-top: $card-top-margin; }
+
+.card {
+    background-color: $dark-grey;
+}
+
+.card-content {
+    padding: 60px;
+    box-sizing: border-box;
+}
+
+#about-me-widget {
+    margin-top: $card-top-margin;
+    .card {
+        background-color: $grey;
+    }
+}
+
+#about-me-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#about-me-summary {
+    // width: calc(2/3*100% - (1 - 2/3)*10px);
+    flex: 2 0 0;
+}
+
+#about-me-title {
+    margin-bottom: 10px;
+    width: 90%;
+    h3 {
+        // width: 102%;
+        border-bottom: 1px solid $dark-grey;
+    }
+}
+
+#about-me-cv-picture {
+    margin-left: 50px;
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+    img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        transform: translate(-50%, -35%);
+        border-radius: 3px;
+    }
+}
 
 #article-container {
 
   .article {
-    padding-bottom: 70px;
-    padding-top: 50px;
-
-    &:not(:last-of-type) {
-        border-bottom: 1px solid $orange;
+    p, h1, h3 {
+        color: white;
     }
 
-    &:first-of-type {
-        padding-top: 0;
-    }
+    margin-bottom: 70px;
+    margin-top: 50px;
+
+    // &:not(:last-of-type) {
+    //     border-bottom: 1px solid $orange;
+    // }
+
+    // &:first-of-type {
+    //     padding-top: 0;
+    // }
   }
 
   section.article-ingress {
@@ -128,12 +182,15 @@ h4 { font-weight: 500; }
   }
 }
 
+#article-loading h3 {
+    color: white;
+}
+
 .article-body {
     pre {
         background-color: #eee;
         padding: 5px 15px;
         line-height: 1.3;
-        // margin-left: -1.5em;
         margin-top: 10px;
         margin-bottom: 10px;
     }
@@ -148,17 +205,17 @@ code[class^="lang-"] {
   font-family: monospace;
 }
 
-#spacer {
-    height: 50px;
+#forecast-widget {
+    min-height: 300px;
+    margin-top: $card-top-margin;
 }
+// #forecast-container {
+//     padding-top: 30px;
+//     padding-bottom: 30px;
+//     min-height: 300px; // Maybe remove this
+// }
 
-#forecast-container {
-    background-color: $dark-grey;
-    padding-top: 30px;
-    padding-bottom: 30px;
-}
-
-#forecast-loading > h2 {
+#forecast-loading > h3 {
     color: white;
 }
 
@@ -203,6 +260,9 @@ code[class^="lang-"] {
             color: white;
             margin-right: 10px;
             font-weight: 400;
+            span i {
+                margin-right: 5px;
+            }
         }
     }
 }
@@ -215,16 +275,23 @@ code[class^="lang-"] {
 
 
 @media only screen and (max-width: 786px) {
-  .container {
-    width: 80%;
-  }
+    .container {
+        width: 80%;
+    }
+    #about-me-content {
+        flex-direction: column;
+    }
+    #about-me-cv-picture {
+        margin: 0 auto;
+        margin-top: 40px;
+    }
 }
 
 @media (max-width: 880px) {
-  .container {
-    width: 85%;
-  }
-  #main-header > .container {
-    width: 100%;
-  }
+    .container {
+        width: 85%;
+    }
+        #main-header > .container {
+        width: 100%;
+    }
 }
