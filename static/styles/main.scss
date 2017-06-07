@@ -207,6 +207,12 @@ code[class^="lang-"] {
 #forecast-widget {
     min-height: 300px;
     margin-top: $card-top-margin;
+    >.card {
+        background-image: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%,rgba(0,0,0,0.5) 100%), url('/img/oslo.jpg');
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
 }
 
 #forecast-loading > h3 {

@@ -204,7 +204,11 @@ update msg model =
 
 forecastLocation : String
 forecastLocation =
-    "?lat=63.411&lon=10.399"
+    "?lat=59.943&lon=10.775"
+
+
+
+-- Storo, Oslo, Norway
 
 
 getTextualForecasts : Cmd Msg
@@ -373,7 +377,7 @@ renderForecast model =
                 renderTextualForecast data
     in
         div [ id "forecast-content" ]
-            [ div [ id "forecast-city" ] [ h3 [] [ text "Trondheim" ] ]
+            [ div [ id "forecast-city" ] [ h3 [] [ text "Oslo" ] ]
             , detailedForecast
             , textualForecast
             ]

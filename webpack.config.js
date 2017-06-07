@@ -59,7 +59,11 @@ let commonConfig = {
       {
          test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
          loader: 'file-loader'
-      }
+      },
+      {
+        test: /\.jpe?g$|\.gif$|\.png$/i,
+        loader: "file-loader?name=/img/[name].[ext]"
+      },
     ],
   },
 
