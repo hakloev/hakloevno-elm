@@ -40,7 +40,7 @@ p {}
 h4 { font-weight: 500; }
 
 .container {
-  max-width: 950px;
+  max-width: $container-width;
   margin: 0 auto;
 }
 
@@ -121,15 +121,14 @@ h4 { font-weight: 500; }
 }
 
 #about-me-summary {
-    // width: calc(2/3*100% - (1 - 2/3)*10px);
     flex: 2 0 0;
 }
 
 #about-me-title {
     margin-bottom: 10px;
-    width: 90%;
+    display: inline-block;
     h3 {
-        // width: 102%;
+        width: 105%;
         border-bottom: 1px solid $dark-grey;
     }
 }
@@ -209,11 +208,6 @@ code[class^="lang-"] {
     min-height: 300px;
     margin-top: $card-top-margin;
 }
-// #forecast-container {
-//     padding-top: 30px;
-//     padding-bottom: 30px;
-//     min-height: 300px; // Maybe remove this
-// }
 
 #forecast-loading > h3 {
     color: white;
@@ -273,44 +267,49 @@ code[class^="lang-"] {
     font-size: 15px;
 }
 
-
-@media only screen and (max-device-width: 880px) {
-    .container {
-        width: 100%;
-    }
-    #about-me-summary {
-        flex: auto;
-    }
-    #about-me-content {
-        flex-direction: column;
-    }
+/*
+  Device = Most of the smartphones in portrait
+  Screen = b/w 320px to 479px
+*/
+@media (max-width: 880px) {
+    .container { width: 100%; }
+    #about-me-summary { flex: auto; }
+    #about-me-content { flex-direction: column; }
     #about-me-cv-picture {
         margin: 0 auto;
         margin-top: 40px;
     }
-}
-
-@media (max-width: 949px) { // One pixel less than container
-    .container {
-        width: 85%;
-    }
-    #main-header > .container {
-        width: 100%;
-    }
-    #about-me-summary {
-        flex: auto;
-    }
-    #about-me-content {
-        flex-direction: column;
-    }
-    #about-me-cv-picture {
-        margin: 0 auto;
-        margin-top: 40px;
-    }
-    #forecast-main-data {
-        flex-direction: column;
+    .card-content { padding: 40px; }
+    #forecast-degrees {
+        span { font-size: 50px; }
     }
     #forecast-details {
         ul { li { display: block; } }
     }
 }
+
+
+// @media (max-width: 949px) { // One pixel less than container
+//     .container {
+//         width: 85%;
+//     }
+//     #main-header > .container {
+//         width: 100%;
+//     }
+//     #about-me-summary {
+//         flex: auto;
+//     }
+//     #about-me-content {
+//         flex-direction: column;
+//     }
+//     #about-me-cv-picture {
+//         margin: 0 auto;
+//         margin-top: 40px;
+//     }
+//     #forecast-main-data {
+//         flex-direction: column;
+//     }
+//     #forecast-details {
+//         ul { li { display: block; } }
+//     }
+// }
