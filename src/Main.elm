@@ -350,7 +350,7 @@ renderForecastWidget model =
         [ div [ class "card-content" ]
             [ case model.detailedForecasts of
                 [] ->
-                    div [ id "forecast-loading" ] [ h1 [] [ text "Knerten is loading your weather data!" ] ]
+                    div [ id "forecast-loading" ] [ h1 [] [ text "Please hold, while Knerten is loading the weather info at his current location" ] ]
 
                 forecasts ->
                     renderForecast model
@@ -422,7 +422,7 @@ renderArticles model =
     section [ id "article-container" ]
         [ case model.articles of
             [] ->
-                div [ id "article-loading", class "card" ] [ div [ class "card-content" ] [ h3 [] [ text "Knerten is collecting his latest articles!" ] ] ]
+                div [ id "article-loading", class "card" ] [ div [ class "card-content" ] [ h1 [] [ text "Please hold, while Knerten is collecting his latest articles" ] ] ]
 
             _ ->
                 div []
