@@ -350,7 +350,7 @@ renderForecastWidget model =
         [ div [ class "card-content" ]
             [ case model.detailedForecasts of
                 [] ->
-                    div [ id "forecast-loading" ] [ h3 [] [ text "Knerten is loading your weather data!" ] ]
+                    div [ id "forecast-loading" ] [ h1 [] [ text "Knerten is loading your weather data!" ] ]
 
                 forecasts ->
                     renderForecast model
@@ -377,7 +377,7 @@ renderForecast model =
                 renderTextualForecast data
     in
         div [ id "forecast-content" ]
-            [ div [ id "forecast-city" ] [ h3 [] [ text "Oslo" ] ]
+            [ div [ id "forecast-city" ] [ h1 [] [ text "Oslo" ] ]
             , detailedForecast
             , textualForecast
             ]
@@ -449,7 +449,10 @@ renderAboutMe =
     div [ class "card" ]
         [ div [ id "about-me-content", class "card-content" ]
             [ div [ id "about-me-summary" ]
-                [ div [ id "about-me-title" ] [ h3 [] [ text "Håkon Løvdal - M.Sc., in Informatics" ] ]
+                [ div [ id "about-me-title" ]
+                    [ h1 [] [ text "Håkon Ø. Løvdal" ]
+                    , h2 [] [ text " M.Sc., in Informatics" ]
+                    ]
                 , div [ id "about-me-text" ] [ aboutMeText ]
                 ]
             , div [ id "about-me-cv-picture" ] [ img [ src "/img/me.png" ] [] ]
@@ -462,12 +465,12 @@ renderHeader =
     header [ id "main-header" ]
         [ div [ class "container" ]
             [ div [ id "logo" ] [ span [] [ text "h" ] ]
-            , a [ href "/" ] [ h3 [] [ text "hakloev.no" ] ]
+            , a [ href "/" ] [ h1 [] [ text "hakloev.no" ] ]
             , nav []
                 [ ul []
                     [ li [] [ a [ href "https://cv.hakloev.no" ] [ text "CV" ] ]
-                    , li [] [ a [ href "https://github.com/hakloev/" ] [ text "GitHub" ] ]
-                    , li [] [ a [ href "https://twitter.com/hakloevdal/" ] [ text "Twitter" ] ]
+                    , li [] [ a [ href "https://github.com/hakloev/" ] [ i [ class "fa fa-github fa-lg" ] [] ] ]
+                    , li [] [ a [ href "https://twitter.com/hakloevdal/" ] [ i [ class "fa fa-twitter fa-lg" ] [] ] ]
                     ]
                 ]
             ]
