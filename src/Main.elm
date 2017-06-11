@@ -38,10 +38,9 @@ init =
 
 
 type alias Model =
-    { articles : List Article
+    { articles : ArticleData
     , detailedForecasts : List DetailedForecast
     , textualForecasts : List TextualForecast
-    , loadError : String
     }
 
 
@@ -52,6 +51,12 @@ type alias Model =
 -- , articles : List Article
 -- , loadError : String
 -- }
+
+
+type alias ArticleData =
+    { articleList : List Article
+    , error : Maybe String
+    }
 
 
 type alias Article =
@@ -118,12 +123,18 @@ type alias TextualForecast =
 --     }
 
 
+initialArticleData : ArticleData
+initialArticleData =
+    { articleList = []
+    , error = Nothing
+    }
+
+
 initialModel : Model
 initialModel =
-    { articles = []
+    { articles = initialArticleData
     , detailedForecasts = []
     , textualForecasts = []
-    , loadError = ""
     }
 
 
@@ -158,6 +169,30 @@ type Msg
 -- | SetSelectedStop String
 
 
+setArticleList : List Article -> Model -> Model
+setArticleList articles model =
+    let
+        articleData =
+            model.articles
+
+        newArticleData =
+            { articleData | articleList = articles }
+    in
+        { model | articles = newArticleData }
+
+
+setArticleLoadError : String -> Model -> Model
+setArticleLoadError err model =
+    let
+        articleData =
+            model.articles
+
+        newArticleData =
+            { articleData | error = Just err }
+    in
+        { model | articles = newArticleData }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -165,10 +200,17 @@ update msg model =
             ( model, Cmd.none )
 
         GetArticles (Result.Ok articles) ->
-            ( { model | articles = articles }, Cmd.none )
+            ( model
+                |> setArticleList articles
+            , Cmd.none
+            )
 
         GetArticles (Result.Err err) ->
-            ( { model | loadError = toString err, articles = [] }, Cmd.none )
+            ( model
+                |> setArticleLoadError (toString err)
+                |> setArticleList []
+            , Cmd.none
+            )
 
         GetDetailedForecasts (Result.Ok forecasts) ->
             -- Should probably also add a check for empty list here?
@@ -179,14 +221,14 @@ update msg model =
             in
                 ( { model | detailedForecasts = newForecasts }, Cmd.none )
 
-        GetDetailedForecasts (Result.Err err) ->
-            ( { model | loadError = toString err, detailedForecasts = [] }, Cmd.none )
+        GetDetailedForecasts (Result.Err _) ->
+            ( { model | detailedForecasts = [] }, Cmd.none )
 
         GetTextualForecasts (Result.Ok forecasts) ->
             ( { model | textualForecasts = forecasts }, Cmd.none )
 
-        GetTextualForecasts (Result.Err err) ->
-            ( { model | loadError = toString err, textualForecasts = [] }, Cmd.none )
+        GetTextualForecasts (Result.Err _) ->
+            ( { model | textualForecasts = [] }, Cmd.none )
 
 
 
@@ -420,16 +462,21 @@ renderTextualForecast data =
 renderArticles : Model -> Html Msg
 renderArticles model =
     section [ id "article-container" ]
-        [ case model.articles of
-            [] ->
-                div [ id "article-loading", class "card" ] [ div [ class "card-content" ] [ h1 [] [ text "Please hold, while Knerten is collecting his latest articles" ] ] ]
+        [ case model.articles.error of
+            Just _ ->
+                div [ id "article-loading", class "card" ] [ div [ class "card-content" ] [ h1 [] [ text "Unfortunately, Knerten were not able to collect his latest articles" ] ] ]
 
-            _ ->
-                div []
-                    (model.articles
-                        |> List.filter (\a -> a.publish == True)
-                        |> List.map (\a -> renderArticle a)
-                    )
+            Nothing ->
+                case model.articles.articleList of
+                    [] ->
+                        div [ id "article-loading", class "card" ] [ div [ class "card-content" ] [ h1 [] [ text "Please hold, while Knerten is collecting his latest articles" ] ] ]
+
+                    _ ->
+                        div []
+                            (model.articles.articleList
+                                |> List.filter (\a -> a.publish == True)
+                                |> List.map (\a -> renderArticle a)
+                            )
         ]
 
 
